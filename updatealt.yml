@@ -2,18 +2,15 @@
 - hosts: all
   become: true
   tasks:
-
-    - name: This command will execute apt updates
-      ansible.builtin.shell: sudo apt-get update -y
-      args:
-        executable: /bin/bash 
-
-    - name: This command will execute apt upgrades
-      ansible.builtin.shell: sudo apt-get upgrade -y
-      args:
-        executable: /bin/bash  
-
-    - name: This command will execute apt-dist upgrades
-      ansible.builtin.shell: sudo apt-get dist-upgrade -y
-      args:
-        executable: /bin/bash  
+    - name: Update all packages to their latest version
+      ansible.builtin.apt:
+        name: "*"
+        state: latest
+        
+    - name: Run the equivalent of "apt-get update" as a separate step
+      ansible.builtin.apt:
+        update_cache: yes
+      
+    - name: Upgrade the OS (apt-get dist-upgrade)
+      ansible.builtin.apt:
+        upgrade: dist
