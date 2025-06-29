@@ -8,9 +8,9 @@
       args:
         executable: /bin/bash 
         
-    - name: Pause for 5mins for server to backup
+    - name: Pause for 10mins for server to backup
       ansible.builtin.pause:
-        minutes: 5
+        minutes: 10
         
     - name: Update all packages to their latest version
       ansible.builtin.apt:
