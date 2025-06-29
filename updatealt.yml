@@ -2,10 +2,6 @@
 - hosts: all
   become: true
   tasks:
-    - name: This command will allow for unmanned apt updates
-      ansible.builtin.shell: sudo sed -i "s/#\$nrconf{kernelhints} = -1;/\$nrconf{kernelhints} = -1;/g" /etc/needrestart/needrestart.conf
-      args:
-        executable: /bin/bash
 
     - name: This command will execute apt updates
       ansible.builtin.shell: sudo apt-get update -y
