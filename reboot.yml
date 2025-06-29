@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: true
+  tasks:
+
+    - name: This command reboot server at 6:15 later
+      ansible.builtin.shell: shutdown -r 06:15 &
+      args:
+        executable: /bin/bash 
+
+    - name: sleep 100 seconds
+      ansible.builtin.shell: sleep 100
+      args:
+        executable: /bin/bash 
