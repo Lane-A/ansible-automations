@@ -1,11 +1,10 @@
 ---
 - hosts: all
-  become: true
+  become: root
   become_method: sudo
   tasks:
   
     - name: Update all packages to their latest version
-      become: yes
       ansible.builtin.apt:
         name: "*"
         state: latest
