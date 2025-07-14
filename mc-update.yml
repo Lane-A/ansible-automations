@@ -5,6 +5,9 @@
   tasks:
     - name: Stop the MC server
       ansible.builtin.shell: tmux send-keys -t minecraftserver "/stop" ENTER
+      become: true
+      become_method: su
+      become_user: minecraft
       args:
         executable: /bin/bash 
         
