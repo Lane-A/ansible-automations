@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: true
+  become_method: sudo
+  tasks:
+  
+    - name: Schedule a reboot for 5 minutes from now
+      ansible.builtin.shell: "shutdown -r +5"
+      async: 1
+      poll: 0
+      ignore_errors: true
+    
+    - name: Wait for the system to come back online
+      ansible.builtin.wait_for_connection:
+        delay: 300
+        timeout: 600
