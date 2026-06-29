@@ -16,7 +16,3 @@
     - name: Upgrade the OS (apt-get dist-upgrade)
       ansible.builtin.apt:
         upgrade: dist
-        
-    - name: Reboot the machine (Wait for 5 min)
-      reboot:
-        reboot_timeout: 300
