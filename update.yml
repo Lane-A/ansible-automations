@@ -62,7 +62,7 @@
                   *Host:* {{ inventory_hostname }}
                   *Failed Task:* {{ ansible_failed_task.name }}
                   *Failed Playbook:* {{ ansible_play_name }}
-                  *Failure Message:* {{ ansible_failed_result.msg }}
+                  *Failure Message:* ```{{ ansible_failed_result }}```
                   
   
           - name: 1F-1 End playbook execution after alert
