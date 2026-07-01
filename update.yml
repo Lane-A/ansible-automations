@@ -26,6 +26,7 @@
           #     msg: "Failed to connect to {{ inventory_hostname }}. Initiating fallback"
 
           - name: 0F-2 Send failure alert to Telegram
+            delegate_to: localhost
             community.general.telegram:
               token: "{{ telegram_token }}"
               api_args:
@@ -39,6 +40,7 @@
                   *Failure Message:* Ansible failed to connect to host {{ inventory_hostname }}
                   
           - name: End playbook execution after alert
+            delegate_to: localhost
             ansible.builtin.fail:
               msg: "Playbook execution stopped due to a failure."
 
