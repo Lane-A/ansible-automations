@@ -9,8 +9,10 @@
       async: 1
       poll: 0
       ignore_errors: true
+      timeout: 300
     
     - name: Wait for the system to come back online
       ansible.builtin.wait_for_connection:
         delay: 300
         timeout: 600
+      timeout: 600
