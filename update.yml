@@ -21,9 +21,9 @@
           - name: 0-3 Run primary task
             ansible.builtin.command: echo "Connected successfully!"
         rescue:
-          - name: 0F-1 Handle connection failure
-            ansible.builtin.debug:
-              msg: "Failed to connect to {{ inventory_hostname }}. Initiating fallback"
+          # - name: 0F-1 Handle connection failure
+          #   ansible.builtin.debug:
+          #     msg: "Failed to connect to {{ inventory_hostname }}. Initiating fallback"
 
           - name: 0F-2 Send failure alert to Telegram
             community.general.telegram:
@@ -37,6 +37,10 @@
                   *Failed Task:* {{ ansible_failed_task.name }}
                   *Failed Playbook:* {{ ansible_play_name }}
                   *Failure Message:* Ansible failed to connect to host {{ inventory_hostname }}
+                  
+          - name: End playbook execution after alert
+            ansible.builtin.fail:
+              msg: "Playbook execution stopped due to a failure."
 
       - name: 1 Update all packages to their latest version
         block:
