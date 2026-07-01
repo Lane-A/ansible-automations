@@ -2,12 +2,34 @@
 - hosts: all
   become: true
   become_method: sudo
+  vars:
+    telegram_token: "{{ lookup('env', 'TELEGRAM_TOKEN') }}"
+    telegram_channel: "{{ lookup('env', 'TELEGRAM_CHANNEL') }}"
   tasks:
 
     - name: Update all packages to their latest version
-      ansible.builtin.apt:
-        name: "*"
-        state: latest
+      block:
+        # ansible.builtin.apt:
+        #   name: "*"
+        #   state: latest
+        - name: Example task that might fail
+          ansible.builtin.command: /bin/false
+      rescue:
+        - name: Send failure alert to Telegram
+          delegate_to: localhost
+          community.general.telegram:
+            token: "{{ telegram_token }}"
+            api_args:
+              chat_id: "{{ telegram_channel }}"
+            parse_mode: "markdown"
+            text: |
+              🚨 *Playbook Failed!*
+              *Host:* {{ inventory_hostname }}
+              *Failed Task:* {{ ansible_failed_task.name }}
+
+        - name: End playbook execution after alert
+          ansible.builtin.fail:
+            msg: "Playbook execution stopped due to a failure."
       timeout: 300
         
     - name: Run the equivalent of "apt-get update" as a separate step
