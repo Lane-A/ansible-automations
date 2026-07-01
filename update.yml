@@ -23,7 +23,7 @@
       rescue:
         - name: "#0F-1" Handle connection failure
           ansible.builtin.debug:
-            msg: "Failed to connect to {{ inventory_hostname }}. Initiating fallback.
+            msg: "Failed to connect to {{ inventory_hostname }}. Initiating fallback"
 
         - name: "#0F-2" Send failure alert to Telegram
           community.general.telegram:
