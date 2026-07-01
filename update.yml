@@ -20,11 +20,11 @@
             token: "{{ telegram_token }}"
             api_args:
               chat_id: "{{ telegram_channel }}"
-            parse_mode: "markdown"
-            text: |
-              🚨 *Playbook Failed!*
-              *Host:* {{ inventory_hostname }}
-              *Failed Task:* {{ ansible_failed_task.name }}
+              parse_mode: "markdown"
+              text: |
+                🚨 *Playbook Failed!*
+                *Host:* {{ inventory_hostname }}
+                *Failed Task:* {{ ansible_failed_task.name }}
 
         - name: End playbook execution after alert
           ansible.builtin.fail:
