@@ -45,11 +45,10 @@
 
       - name: 1 Update all packages to their latest version
         block:
-          # ansible.builtin.apt:
-          #   name: "*"
-          #   state: latest
           - name: 1-0 Update all packages to their latest version
-            ansible.builtin.command: /bin/false
+            ansible.builtin.apt:
+              name: "*"
+              state: latest
         rescue:
           - name: 1F-0 Send failure alert to Telegram
             community.general.telegram:
@@ -63,19 +62,53 @@
                   *Failed Task:* {{ ansible_failed_task.name }}
                   *Failed Playbook:* {{ ansible_play_name }}
                   *Failure Message:* ```{{ ansible_failed_result }}```
-                  
-  
           - name: 1F-1 End playbook execution after alert
             ansible.builtin.fail:
               msg: "Playbook execution stopped due to a failure."
         timeout: 300
           
       - name: 2 Run the equivalent of "apt-get update" as a separate step
-        ansible.builtin.apt:
-          update_cache: yes
+        block:
+          - name: 2-0 Run the equivalent of "apt-get update" as a separate step
+            ansible.builtin.apt:
+            update_cache: yes
+        rescue:
+          - name: 2F-0 Send failure alert to Telegram
+            community.general.telegram:
+              token: "{{ telegram_token }}"
+              api_args:
+                chat_id: "{{ telegram_channel }}"
+                parse_mode: "markdown"
+                text: |
+                  🚨 *Playbook Failed!*
+                  *Host:* {{ inventory_hostname }}
+                  *Failed Task:* {{ ansible_failed_task.name }}
+                  *Failed Playbook:* {{ ansible_play_name }}
+                  *Failure Message:* ```{{ ansible_failed_result }}```
+          - name: 2F-1 End playbook execution after alert
+            ansible.builtin.fail:
+              msg: "Playbook execution stopped due to a failure."
         timeout: 300
         
       - name: 3 Upgrade the OS (apt-get dist-upgrade)
-        ansible.builtin.apt:
-          upgrade: dist
+        block:
+          - name: 3-0 Upgrade the OS (apt-get dist-upgrade)
+            ansible.builtin.apt:
+              upgrade: dist
+        rescue:
+          - name: 3F-0 Send failure alert to Telegram
+            community.general.telegram:
+              token: "{{ telegram_token }}"
+              api_args:
+                chat_id: "{{ telegram_channel }}"
+                parse_mode: "markdown"
+                text: |
+                  🚨 *Playbook Failed!*
+                  *Host:* {{ inventory_hostname }}
+                  *Failed Task:* {{ ansible_failed_task.name }}
+                  *Failed Playbook:* {{ ansible_play_name }}
+                  *Failure Message:* ```{{ ansible_failed_result }}```
+          - name: 3F-1 End playbook execution after alert
+            ansible.builtin.fail:
+              msg: "Playbook execution stopped due to a failure."
         timeout: 300
