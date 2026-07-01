@@ -16,7 +16,6 @@
           ansible.builtin.command: /bin/false
       rescue:
         - name: Send failure alert to Telegram
-          delegate_to: localhost
           community.general.telegram:
             token: "{{ telegram_token }}"
             api_args:
