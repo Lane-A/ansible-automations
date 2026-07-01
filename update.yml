@@ -71,7 +71,7 @@
         block:
           - name: 2-0 Run the equivalent of "apt-get update" as a separate step
             ansible.builtin.apt:
-            update_cache: yes
+              update_cache: yes
         rescue:
           - name: 2F-0 Send failure alert to Telegram
             community.general.telegram:
