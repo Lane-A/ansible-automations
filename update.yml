@@ -22,10 +22,6 @@
           - name: 0-3 Run primary task
             ansible.builtin.command: echo "Connected successfully!"
         rescue:
-          # - name: 0F-1 Handle connection failure
-          #   ansible.builtin.debug:
-          #     msg: "Failed to connect to {{ inventory_hostname }}. Initiating fallback"
-
           - name: 0F-1 Send failure alert to Telegram
             delegate_to: localhost
             become: false
