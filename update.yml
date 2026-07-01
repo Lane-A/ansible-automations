@@ -2,17 +2,48 @@
 - hosts: all
   become: true
   become_method: sudo
+  gather_facts: false
   vars:
     telegram_token: "{{ lookup('env', 'TELEGRAM_TOKEN') }}"
     telegram_channel: "{{ lookup('env', 'TELEGRAM_CHANNEL') }}"
   tasks:
+      - name: "#0" Attempt Connection and Configuration
+      block:
+        - name: "#0-1" Check host availability explicitly
+          ansible.builtin.wait_for_connection:
+            timeout: 20
+          # CRITICAL: Forces connection errors to act like standard failures
+          ignore_unreachable: true
 
-    - name: Update all packages to their latest version
+        - name: "#0-2" Gather facts once connection is confirmed
+          ansible.builtin.setup:
+
+        - name: "#0-3" Run primary task
+          ansible.builtin.command: echo "Connected successfully!"
+      rescue:
+        - name: "#0F-1" Handle connection failure
+          ansible.builtin.debug:
+            msg: "Failed to connect to {{ inventory_hostname }}. Initiating fallback.
+
+        - name: "#0F-2" Send failure alert to Telegram
+          community.general.telegram:
+            token: "{{ telegram_token }}"
+            api_args:
+              chat_id: "{{ telegram_channel }}"
+              parse_mode: "markdown"
+              text: |
+                🚨 *Playbook Failed!*
+                *Host:* {{ inventory_hostname }}
+                *Failed Task:* {{ ansible_failed_task.name }}
+                *Failed Playbook:* {{ ansible_play_name }}
+                *Failure Message:* Ansible failed to connect to host {{ inventory_hostname }}
+
+    - name: "#1" Update all packages to their latest version
       block:
         # ansible.builtin.apt:
         #   name: "*"
         #   state: latest
-        - name: Example task that might fail
+        - name: "#1" Update all packages to their latest version
           ansible.builtin.command: /bin/false
       rescue:
         - name: Send failure alert to Telegram
@@ -25,18 +56,21 @@
                 🚨 *Playbook Failed!*
                 *Host:* {{ inventory_hostname }}
                 *Failed Task:* {{ ansible_failed_task.name }}
+                *Failed Playbook:* {{ ansible_play_name }}
+                *Failure Message:* {{ ansible_failed_result.msg }}
+                
 
         - name: End playbook execution after alert
           ansible.builtin.fail:
             msg: "Playbook execution stopped due to a failure."
       timeout: 300
         
-    - name: Run the equivalent of "apt-get update" as a separate step
+    - name: "#2" Run the equivalent of "apt-get update" as a separate step
       ansible.builtin.apt:
         update_cache: yes
       timeout: 300
       
-    - name: Upgrade the OS (apt-get dist-upgrade)
+    - name: "#3" Upgrade the OS (apt-get dist-upgrade)
       ansible.builtin.apt:
         upgrade: dist
       timeout: 300
