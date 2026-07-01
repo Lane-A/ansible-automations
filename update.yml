@@ -3,10 +3,10 @@
   become: true
   become_method: sudo
   gather_facts: false
+  name: update.yml
   vars:
     telegram_token: "{{ lookup('env', 'TELEGRAM_TOKEN') }}"
     telegram_channel: "{{ lookup('env', 'TELEGRAM_CHANNEL') }}"
-    playbook_name: "{{ lookup('file', '/proc/self/cmdline') | regex_replace('\\u0000',' ') | split(' ') | select('match', '^[a-z-_/]*[.]y[a]*ml') | first | basename }}"
   tasks:
       - name: 0 Attempt Connection and Configuration
         block:
@@ -38,7 +38,7 @@
                   🚨 *Playbook Failed!*
                   *Host:* {{ inventory_hostname }}
                   *Failed Task:* {{ ansible_failed_task.name }}
-                  *Failed Playbook:* {{ playbook_name }}
+                  *Failed Playbook:* {{ ansible_play_name }}
                   *Failure Message:* Ansible failed to connect to host {{ inventory_hostname }}
                   
           - name: End playbook execution after alert
@@ -65,7 +65,7 @@
                   🚨 *Playbook Failed!*
                   *Host:* {{ inventory_hostname }}
                   *Failed Task:* {{ ansible_failed_task.name }}
-                  *Failed Playbook:* {{ playbook_name }}
+                  *Failed Playbook:* {{ ansible_play_name }}
                   *Failure Message:* {{ ansible_failed_result.msg }}
                   
   
