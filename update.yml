@@ -26,7 +26,7 @@
           #   ansible.builtin.debug:
           #     msg: "Failed to connect to {{ inventory_hostname }}. Initiating fallback"
 
-          - name: 0F-2 Send failure alert to Telegram
+          - name: 0F-1 Send failure alert to Telegram
             delegate_to: localhost
             become: false
             community.general.telegram:
@@ -41,7 +41,7 @@
                   *Failed Playbook:* {{ ansible_play_name }}
                   *Failure Message:* Ansible failed to connect to host {{ inventory_hostname }}
                   
-          - name: End playbook execution after alert
+          - name: 0F-2 End playbook execution after alert
             delegate_to: localhost
             become: false
             ansible.builtin.fail:
@@ -55,7 +55,7 @@
           - name: 1-0 Update all packages to their latest version
             ansible.builtin.command: /bin/false
         rescue:
-          - name: Send failure alert to Telegram
+          - name: 1F-0 Send failure alert to Telegram
             community.general.telegram:
               token: "{{ telegram_token }}"
               api_args:
@@ -69,7 +69,7 @@
                   *Failure Message:* {{ ansible_failed_result.msg }}
                   
   
-          - name: End playbook execution after alert
+          - name: 1F-1 End playbook execution after alert
             ansible.builtin.fail:
               msg: "Playbook execution stopped due to a failure."
         timeout: 300
